@@ -7,20 +7,37 @@ function App() {
 
   const API = "http://localhost:5000/api/tasks";
 
+  // GET tasks
   const getTasks = async () => {
-    const res = await axios.get(API);
-    setTasks(res.data);
+    try {
+      const res = await axios.get(API);
+      setTasks(res.data);
+    } catch (err) {
+      console.error("Error fetching tasks:", err.message);
+    }
   };
 
+  // ADD task
   const addTask = async () => {
-    await axios.post(API, { text });
-    setText("");
-    getTasks();
+    if (!text.trim()) return;
+
+    try {
+      await axios.post(API, { text });
+      setText("");
+      await getTasks(); // ✅ wait for refresh
+    } catch (err) {
+      console.error("Error adding task:", err.message);
+    }
   };
 
+  // DELETE task
   const deleteTask = async (id) => {
-    await axios.delete(`${API}/${id}`);
-    getTasks();
+    try {
+      await axios.delete(`${API}/${id}`);
+      await getTasks(); // ✅ refresh after delete
+    } catch (err) {
+      console.error("Error deleting task:", err.message);
+    }
   };
 
   useEffect(() => {
@@ -28,23 +45,34 @@ function App() {
   }, []);
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>Task Manager</h2>
 
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Enter task"
+        style={{ padding: "8px", marginRight: "10px" }}
       />
+
       <button onClick={addTask}>Add</button>
 
-      <ul>
-        {tasks.map((task) => (
-          <li key={task._id}>
-            {task.text}
-            <button onClick={() => deleteTask(task._id)}>❌</button>
-          </li>
-        ))}
+      <ul style={{ listStyle: "none", marginTop: "20px" }}>
+        {tasks.length === 0 ? (
+          <p>No tasks found</p>
+        ) : (
+          tasks.map((task) => (
+            <li key={task._id} style={{ marginBottom: "10px" }}>
+              {task.text}
+              <button
+                onClick={() => deleteTask(task._id)}
+                style={{ marginLeft: "10px" }}
+              >
+                ❌
+              </button>
+            </li>
+          ))
+        )}
       </ul>
     </div>
   );

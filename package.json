@@ -1,0 +1,13 @@
+{
+  "name": "taskmanager-mern",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"cd backend && nodemon server.js\" \"cd frontend && npm start\""
+  },
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
